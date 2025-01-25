@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://j060qriw6yvt" path="res://scenes/enemies/swordsman.tscn" id="7_07vw4"]
 [ext_resource type="Script" path="res://scenes/hud.gd" id="7_wgr5f"]
 
-[sub_resource type="Shader" id="Shader_1ndar"]
+[sub_resource type="Shader" id="Shader_ksge1"]
 resource_local_to_scene = true
 code = "shader_type canvas_item;
 
@@ -27,9 +27,9 @@ void fragment() {
 //}
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jmqef"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q0n3k"]
 resource_local_to_scene = true
-shader = SubResource("Shader_1ndar")
+shader = SubResource("Shader_ksge1")
 
 [sub_resource type="Theme" id="Theme_ttibf"]
 
@@ -56,7 +56,7 @@ editor_draw_limits = true
 script = ExtResource("2_dwrlo")
 
 [node name="TestBaseLayer" parent="Layers" instance=ExtResource("2_oy2iv")]
-material = SubResource("ShaderMaterial_jmqef")
+material = SubResource("ShaderMaterial_q0n3k")
 script = ExtResource("2_dwrlo")
 
 [node name="Actors" type="Node2D" parent="."]

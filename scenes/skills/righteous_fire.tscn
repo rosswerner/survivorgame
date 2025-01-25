@@ -18,5 +18,8 @@ texture = ExtResource("2_4p21h")
 shape = SubResource("CircleShape2D_hju37")
 
 [node name="DoTTimer" type="Timer" parent="."]
+autostart = true
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="timeout" from="DoTTimer" to="." method="_on_dot_timer_timeout"]

@@ -39,7 +39,7 @@ func _physics_process(_delta):
 		
 		##Use skills##
 		target_position = get_closest_enemy()
-		fireball_skill()
+		#fireball_skill()
 		rf_skill()
 			
 		pos_dist = position.distance_to(click_position)	
@@ -93,7 +93,8 @@ func rf_skill() -> void:
 	if(!rf_on):
 		var rf_tmp := rf.instantiate()
 		rf_on = true
-		rf_tmp.position = global_position
+		rf_tmp.position = global_position.normalized()
+		add_child(rf_tmp)
 		
 func fireball_skill() -> void:
 	if(target_position != Vector2.ZERO):

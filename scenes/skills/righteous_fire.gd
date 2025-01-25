@@ -1,18 +1,21 @@
 extends Area2D
 
-@export var radius : float = 0.5
+@export var radius : float = 2.5
 @export var dot_speed := .5
 @export var damage : float = 1.0
 
 @onready var dot_timer := $DoTTimer
 @onready var sprite := $Sprite2D
+@onready var dot_collision := $DoTCollision
 
 var enemies_in_range := []
 
 func _ready():
 	sprite.scale *= radius
+	dot_collision.scale *= radius
+	
 	dot_timer.wait_time = dot_speed
-	dot_timer.start()
+	#dot_timer.start()
 	#explosion_collision.set_deferred("disabled", true)
 
 #func _physics_process(delta) -> void:
@@ -21,12 +24,15 @@ func _ready():
 func _on_body_entered(body: Node2D) -> void:
 	if(body.is_in_group("Monster")):
 		enemies_in_range.append(body)
+		
+func _on_body_exited(body: Node2D) -> void:
+	if(body.is_in_group("Monster")):
+		enemies_in_range.erase(body)
 
-func _on_timer_timeout() -> void:
+func _on_dot_timer_timeout() -> void:
 	if(!enemies_in_range.is_empty()):
 		for body in enemies_in_range :
 			body.hit(damage)
-	dot_timer.start()
 
 func destroy() -> void:
 	queue_free()
