@@ -1,0 +1,117 @@
+[gd_scene load_steps=14 format=3 uid="uid://b4dcx8ompxlku"]
+
+[ext_resource type="PackedScene" uid="uid://dk84rhdogwg2j" path="res://scenes/characters/player_character.tscn" id="1_u4ltj"]
+[ext_resource type="Script" path="res://scenes/layers.gd" id="2_dwrlo"]
+[ext_resource type="PackedScene" uid="uid://bxh2ctf0htioa" path="res://scenes/test_base_layer.tscn" id="2_oy2iv"]
+[ext_resource type="PackedScene" uid="uid://bnovo4dummyvg" path="res://scenes/enemies/baby_slime.tscn" id="4_qyr7a"]
+[ext_resource type="PackedScene" uid="uid://bcql7tuubulva" path="res://scenes/enemies/enemy_spawner.tscn" id="6_ydg56"]
+[ext_resource type="Texture2D" uid="uid://borclc8mq70g7" path="res://assets/gui/PlayerHealthSkeleton.png" id="7_6h6eq"]
+[ext_resource type="PackedScene" uid="uid://j060qriw6yvt" path="res://scenes/enemies/swordsman.tscn" id="7_07vw4"]
+[ext_resource type="Script" path="res://scenes/hud.gd" id="7_wgr5f"]
+
+[sub_resource type="Shader" id="Shader_1ndar"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	// Called for every pixel the material is visible on.
+}
+
+//void light() {
+	// Called for every pixel for every light affecting the CanvasItem.
+	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jmqef"]
+resource_local_to_scene = true
+shader = SubResource("Shader_1ndar")
+
+[sub_resource type="Theme" id="Theme_ttibf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_a3qq8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4glax"]
+bg_color = Color(0.82809, 0, 0.0513083, 1)
+
+[node name="GameLevel" type="Node2D"]
+y_sort_enabled = true
+position = Vector2(440, 305)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-333, -235)
+scale = Vector2(0.25, 0.25)
+zoom = Vector2(0.8, 0.8)
+limit_left = 0
+limit_top = 0
+limit_right = 2000
+limit_bottom = 1000
+editor_draw_limits = true
+
+[node name="Layers" type="Node" parent="."]
+script = ExtResource("2_dwrlo")
+
+[node name="TestBaseLayer" parent="Layers" instance=ExtResource("2_oy2iv")]
+material = SubResource("ShaderMaterial_jmqef")
+script = ExtResource("2_dwrlo")
+
+[node name="Actors" type="Node2D" parent="."]
+visibility_layer = 524288
+z_index = 1
+y_sort_enabled = true
+position = Vector2(-440, -305)
+
+[node name="Player" parent="Actors" instance=ExtResource("1_u4ltj")]
+position = Vector2(107, 70)
+scale = Vector2(0.25, 0.25)
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Actors/Player"]
+z_index = 1
+y_sort_enabled = true
+remote_path = NodePath("../../../Camera2D")
+
+[node name="HUD" type="CanvasLayer" parent="Actors/Player"]
+script = ExtResource("7_wgr5f")
+
+[node name="HealthBar" type="ProgressBar" parent="Actors/Player/HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = -95.0
+offset_right = 91.0
+offset_bottom = -5.0
+grow_vertical = 0
+theme = SubResource("Theme_ttibf")
+theme_override_styles/background = SubResource("StyleBoxEmpty_a3qq8")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4glax")
+fill_mode = 3
+show_percentage = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Actors/Player/HUD"]
+visible = false
+top_level = true
+z_index = 1
+position = Vector2(46, 271)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("7_6h6eq")
+
+[node name="EnemyActors" type="Node2D" parent="Actors"]
+y_sort_enabled = true
+position = Vector2(292, 177)
+
+[node name="BabySlime" parent="Actors/EnemyActors" groups=["Monster"] instance=ExtResource("4_qyr7a")]
+
+[node name="Swordsman" parent="Actors/EnemyActors" instance=ExtResource("7_07vw4")]
+position = Vector2(328, 15)
+rotation = 3.14159
+scale = Vector2(1, -1)
+
+[node name="EnemySpawner" parent="." groups=["Monster"] instance=ExtResource("6_ydg56")]
+top_level = true
+y_sort_enabled = true
+position = Vector2(202, 156)

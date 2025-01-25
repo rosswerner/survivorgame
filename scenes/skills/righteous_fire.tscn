@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://cj0b0on8ry214"]
+
+[ext_resource type="Material" uid="uid://ccemcedsnmila" path="res://scenes/enemies/archer.tres" id="1_5w61p"]
+[ext_resource type="Script" path="res://scenes/skills/righteous_fire.gd" id="1_h03sg"]
+[ext_resource type="Texture2D" uid="uid://c80mhegv5i2br" path="res://assets/MyAssets/Circle128x128.png" id="2_4p21h"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hju37"]
+radius = 58.0086
+
+[node name="RighteousFire" type="Area2D"]
+script = ExtResource("1_h03sg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = ExtResource("1_5w61p")
+texture = ExtResource("2_4p21h")
+
+[node name="DoTCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_hju37")
+
+[node name="DoTTimer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

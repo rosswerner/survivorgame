@@ -1,0 +1,110 @@
+[gd_scene load_steps=15 format=3 uid="uid://4w4cxk0ym3xy"]
+
+[ext_resource type="Script" path="res://scenes/enemies/archer_green.gd" id="1_cn6cv"]
+[ext_resource type="Texture2D" uid="uid://bfknxrala6hoc" path="res://assets/characters/baby_slime.png" id="2_odioc"]
+[ext_resource type="Material" uid="uid://ccemcedsnmila" path="res://scenes/enemies/archer.tres" id="2_xv8qa"]
+[ext_resource type="Shader" path="res://scenes/enemies/archer.gdshader" id="3_whhhy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_quwf0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fbj0v"]
+radius = 292.335
+
+[sub_resource type="Gradient" id="Gradient_h18nd"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_cr5bs"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_p64le"]
+color_ramp = SubResource("Gradient_h18nd")
+noise = SubResource("FastNoiseLite_cr5bs")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vfxk6"]
+shader = ExtResource("3_whhhy")
+shader_parameter/speed = 1.0
+shader_parameter/noise_img = SubResource("NoiseTexture2D_p64le")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cjfhu"]
+radius = 150.003
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s48id"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p0xbs"]
+bg_color = Color(0.910222, 0.038437, 0.175216, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv5f5"]
+bg_color = Color(1, 0.850934, 0.83593, 1)
+
+[node name="ArcherGreen" type="CharacterBody2D" groups=["Monster"]]
+z_index = 1
+y_sort_enabled = true
+position = Vector2(0, -1)
+scale = Vector2(-1, 1)
+platform_floor_layers = 0
+script = ExtResource("1_cn6cv")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = ExtResource("2_xv8qa")
+position = Vector2(0, 1)
+texture = ExtResource("2_odioc")
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+position = Vector2(0, 1)
+rotation = -3.14159
+scale = Vector2(1, -1)
+shape = SubResource("CircleShape2D_quwf0")
+
+[node name="StateTimer" type="Timer" parent="."]
+
+[node name="PlayerDetector" type="Area2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+position = Vector2(0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetector" groups=["Monster"]]
+position = Vector2(-1, 0)
+shape = SubResource("CircleShape2D_fbj0v")
+
+[node name="AttackPlayerDetector" type="Area2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+position = Vector2(0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackPlayerDetector"]
+material = SubResource("ShaderMaterial_vfxk6")
+position = Vector2(0, -1)
+shape = SubResource("CircleShape2D_cjfhu")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+z_index = 5
+y_sort_enabled = true
+offset_left = -10.0
+offset_top = -14.0
+offset_right = 10.0
+offset_bottom = -10.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_s48id")
+theme_override_styles/fill = SubResource("StyleBoxFlat_p0xbs")
+fill_mode = 1
+show_percentage = false
+
+[node name="DamageBar" type="ProgressBar" parent="HealthBar"]
+show_behind_parent = true
+z_index = -1
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 4.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_mv5f5")
+fill_mode = 1
+show_percentage = false
+
+[node name="DamageBarTimer" type="Timer" parent="HealthBar/DamageBar"]
+
+[connection signal="body_entered" from="PlayerDetector" to="." method="_on_player_detector_body_entered"]
+[connection signal="body_exited" from="PlayerDetector" to="." method="_on_player_detector_body_exited"]
+[connection signal="body_entered" from="AttackPlayerDetector" to="." method="_on_attack_player_detector_body_entered"]
+[connection signal="body_exited" from="AttackPlayerDetector" to="." method="_on_attack_player_detector_body_exited"]
+[connection signal="timeout" from="HealthBar/DamageBar/DamageBarTimer" to="." method="_on_damage_bar_timer_timeout"]

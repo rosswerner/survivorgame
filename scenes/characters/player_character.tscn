@@ -1,0 +1,65 @@
+[gd_scene load_steps=11 format=3 uid="uid://dk84rhdogwg2j"]
+
+[ext_resource type="Script" path="res://scenes/characters/player_char.gd" id="1_j1ge7"]
+[ext_resource type="Texture2D" uid="uid://dx5j8dy1sh2sy" path="res://assets/MyAssets/Triangle128x128.png" id="2_bewpg"]
+[ext_resource type="Script" path="res://scenes/characters/marker_2d.gd" id="2_hoqev"]
+[ext_resource type="Shader" path="res://scenes/characters/player_character.gdshader" id="3_ur35a"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xixrg"]
+radius = 63.0
+height = 150.0
+
+[sub_resource type="Gradient" id="Gradient_3kon7"]
+colors = PackedColorArray(0, 1, 0, 1, 1, 0.360784, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bunf4"]
+fractal_weighted_strength = 0.6
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4yjaf"]
+as_normal_map = true
+bump_strength = 14.8
+color_ramp = SubResource("Gradient_3kon7")
+noise = SubResource("FastNoiseLite_bunf4")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1yfx"]
+shader = ExtResource("3_ur35a")
+shader_parameter/speed = 1.0
+shader_parameter/noise_img = SubResource("NoiseTexture2D_4yjaf")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qlc3q"]
+radius = 1152.0
+
+[node name="player_character" type="CharacterBody2D" groups=["Player"]]
+z_index = 1
+y_sort_enabled = true
+position = Vector2(0, -2)
+platform_floor_layers = 4294967280
+script = ExtResource("1_j1ge7")
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+visible = false
+y_sort_enabled = true
+position = Vector2(-9, 2)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_xixrg")
+
+[node name="Marker2D" type="Marker2D" parent="."]
+script = ExtResource("2_hoqev")
+
+[node name="Sprite2D" type="Sprite2D" parent="Marker2D"]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_o1yfx")
+position = Vector2(0, 2)
+rotation = 1.5708
+texture = ExtResource("2_bewpg")
+
+[node name="EnemyDetector" type="Area2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+
+[node name="EnemyTargeterBox" type="CollisionShape2D" parent="EnemyDetector"]
+shape = SubResource("CircleShape2D_qlc3q")
+
+[connection signal="body_entered" from="EnemyDetector" to="." method="_on_enemy_detector_body_entered"]
+[connection signal="body_exited" from="EnemyDetector" to="." method="_on_enemy_detector_body_exited"]
