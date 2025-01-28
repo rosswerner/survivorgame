@@ -1,8 +1,11 @@
 extends CharacterBody2D
 
-@export var move_speed : float = 100
-@export var attack_speed : float = 1000
 #@export var starting_direction : Vector2 = Vector2(0,1)
+##Skills
+@export var basic_active := true
+@export var fireball_active := true
+@export var rf_active := false
+@export var arrow_active := false
 
 var last_velocity := Vector2.ZERO
 var click_position := Vector2()
@@ -16,14 +19,28 @@ var rf_on := false
 var xp := 0
 var level := 1
 
+##UPGRADES
+var collected_upgrades = []
+var upgrade_options = []
+var dmg_resistance = 0.0
+@export var move_speed : float = 100 #TODO remove export - in for ez testing
+@export var attack_speed : float = 1000 #TODO remove export - in for ez testing
+@export var cast_speed : float = 1000 #TODO remove export - in for ez testing
+var tempo_speed := 0.0
+
 #@export var attack_velocity : Vector2
 @onready var fireball := preload("res://scenes/skills/fireball.tscn")
+@onready var arrow := preload("res://scenes/skills/arrow.tscn")
 @onready var rf := preload("res://scenes/skills/righteous_fire.tscn")
 @onready var health_bar := get_node("HUD/HealthBar")
 @onready var xp_bar := get_node("HUD/XPBar")
 @onready var tot_hp : float = 1000
 @onready var cur_hp := tot_hp
 @onready var hitbox := $Hitbox
+@onready var level_panel := get_node("%LevelUp")
+@onready var upgrade_options_UI := get_node("%UpgradeOptions")
+#@onready var sndLevelUp := get_node("%LevelingSound")
+@onready var item_options := preload("res://scenes/utilities/item_option.tscn")
 
 func _ready():
 	click_position = position
@@ -43,8 +60,7 @@ func _physics_process(_delta):
 		
 		##Use skills##
 		target_position = get_closest_enemy()
-		fireball_skill()
-		rf_skill()
+		use_skills()
 			
 		pos_dist = position.distance_to(click_position)	
 		if pos_dist > 4:
@@ -70,6 +86,16 @@ func _physics_process(_delta):
 		#print("velocity = " + str(velocity))
 		#print("posdist = " + str(pos_dist))
 		
+func use_skills() -> void:
+	if(basic_active) :
+		basic_skill()
+	if(fireball_active) :
+		fireball_skill()
+	if(rf_active) :
+		rf_skill()
+	if(arrow_active) :
+		arrow_skill()
+		
 func hit(damage: float) -> void:
 	if(cur_hp > 0):
 		cur_hp -= damage
@@ -93,12 +119,27 @@ func die() -> void:
 	print("ded")
 	#damage_bar.visible = false
 	
+func basic_skill() -> void:
+	pass
+	
 func rf_skill() -> void:
 	if(!rf_on):
 		var rf_tmp := rf.instantiate()
 		rf_on = true
 		rf_tmp.position = global_position.normalized()
 		add_child(rf_tmp)
+		
+func arrow_skill() -> void:
+	if(target_position != Vector2.ZERO):
+		var arrow_tmp := arrow.instantiate()
+		if(Time.get_ticks_msec() - skill1_last_time >= arrow_tmp.delay_time):
+			skill1_last_time = Time.get_ticks_msec()
+			var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
+			arrow_tmp.position = global_position
+			arrow_tmp.rotation = position.direction_to(target_position).angle()
+			arrow_tmp.direction = shoot_target
+			#this is to make the proj not be affected by the player's movements
+			get_tree().get_root().add_child(arrow_tmp)
 		
 func fireball_skill() -> void:
 	if(target_position != Vector2.ZERO):
@@ -124,11 +165,37 @@ func get_closest_enemy() -> Vector2:
 				target = body.global_position
 	return target
 	
+func calculate_xp() -> void:
+	if (xp >= (1.349 * 1.191 ** level) + 10):
+		level_up()
+	
+	xp_bar.value = xp
+	
 func level_up() -> void:
 	xp = xp - (1.349 * 1.191 ** level + 10)
 	level += 1
 	xp_bar.max_value = (1.349 * 1.191 ** level + 10)
-	#TODO skill selection
+	
+	level_panel.visible = true
+	var options = 0
+	while(options < 3):
+		var item_options_tmp = item_options.instantiate()
+		upgrade_options_UI.add_child(item_options_tmp)
+		options += 1
+	get_tree().paused = true
+	
+func upgrade_character(upgrade):
+	var option_children = upgrade_options_UI.get_children()
+	for options in option_children:
+		options.queue_free()
+		
+	level_panel.visible = false
+	get_tree().paused = false
+	
+	calculate_xp()
+	
+func get_random_upgrades() -> void:
+	pass
 
 func _on_animation_tree_animation_finished(anim_name: StringName) -> void:
 	if(anim_name == "death"):
@@ -152,6 +219,4 @@ func _on_pickup_detector_area_entered(area: Area2D) -> void:
 func _on_pickup_collector_area_entered(area: Area2D) -> void:
 	if(area.is_in_group("Pickups")):
 		xp += area.collect()
-		if (xp >= (1.349 * 1.191 ** level) + 10):
-			level_up()
-		xp_bar.value = xp
+		calculate_xp()

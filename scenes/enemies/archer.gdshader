@@ -7,9 +7,9 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 uv1 = vec2(UV.x + TIME * speed, UV.y);
+	vec2 uv1 = vec2(UV.x, UV.y);
 	vec2 uv2 = vec2(UV.x, UV.y);
-	vec2 uv3 = vec2(UV.x, UV.y + TIME * speed);
+	vec2 uv3 = vec2(UV.x, UV.y);
 	float noise_r = texture(TEXTURE, UV).g;//texture(noise_img, uv1).r *1.8;
 	float noise_g = texture(noise_img, uv2).g;
 	float noise_b = texture(noise_img, uv3).b;

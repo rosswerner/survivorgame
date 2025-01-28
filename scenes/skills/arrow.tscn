@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/skills/arrow.gd" id="1_vcwb1"]
 [ext_resource type="Texture2D" uid="uid://ttdepqjwn6bo" path="res://assets/skills/arrow.png" id="2_6oiiq"]
-[ext_resource type="Material" uid="uid://ccemcedsnmila" path="res://scenes/enemies/archer.tres" id="2_mb3oe"]
+[ext_resource type="Material" uid="uid://b5r65ghbsw1m8" path="res://scenes/enemies/arrow.tres" id="2_qulek"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7xfve"]
 size = Vector2(8, 2)
@@ -110,7 +110,7 @@ y_sort_enabled = true
 script = ExtResource("1_vcwb1")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-material = ExtResource("2_mb3oe")
+material = ExtResource("2_qulek")
 texture = ExtResource("2_6oiiq")
 
 [node name="ShootCollision" type="CollisionShape2D" parent="."]

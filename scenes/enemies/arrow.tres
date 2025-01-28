@@ -1,15 +1,13 @@
-[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://ccemcedsnmila"]
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://b5r65ghbsw1m8"]
 
-[ext_resource type="Shader" path="res://scenes/enemies/archer.gdshader" id="1_g783y"]
+[ext_resource type="Shader" path="res://scenes/enemies/archer.gdshader" id="1_snpbq"]
 
 [sub_resource type="Gradient" id="Gradient_peybx"]
-offsets = PackedFloat32Array(0, 0.614754)
-colors = PackedColorArray(0.964706, 0.231373, 0.2, 1, 0.027451, 0.00784314, 0, 0.992157)
+offsets = PackedFloat32Array(0, 0.647541)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ln0v4"]
 noise_type = 4
 seed = 6
-offset = Vector3(-260.87, 0, 0)
 domain_warp_enabled = true
 domain_warp_type = 1
 
@@ -19,6 +17,6 @@ color_ramp = SubResource("Gradient_peybx")
 noise = SubResource("FastNoiseLite_ln0v4")
 
 [resource]
-shader = ExtResource("1_g783y")
+shader = ExtResource("1_snpbq")
 shader_parameter/speed = 1.0
 shader_parameter/noise_img = SubResource("NoiseTexture2D_46fn3")

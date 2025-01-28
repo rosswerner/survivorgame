@@ -1,8 +1,8 @@
 [gd_scene load_steps=15 format=3 uid="uid://4w4cxk0ym3xy"]
 
 [ext_resource type="Script" path="res://scenes/enemies/archer_green.gd" id="1_cn6cv"]
+[ext_resource type="Material" uid="uid://b5r65ghbsw1m8" path="res://scenes/enemies/arrow.tres" id="2_iyfso"]
 [ext_resource type="Texture2D" uid="uid://bfknxrala6hoc" path="res://assets/characters/baby_slime.png" id="2_odioc"]
-[ext_resource type="Material" uid="uid://ccemcedsnmila" path="res://scenes/enemies/archer.tres" id="2_xv8qa"]
 [ext_resource type="Shader" path="res://scenes/enemies/archer.gdshader" id="3_whhhy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_quwf0"]
@@ -43,7 +43,7 @@ platform_floor_layers = 0
 script = ExtResource("1_cn6cv")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-material = ExtResource("2_xv8qa")
+material = ExtResource("2_iyfso")
 position = Vector2(0, 1)
 texture = ExtResource("2_odioc")
 

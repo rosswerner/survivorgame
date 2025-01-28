@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://scenes/hud.gd" id="7_wgr5f"]
 [ext_resource type="PackedScene" uid="uid://dkwg51dvajp0i" path="res://scenes/pickups/experience.tscn" id="8_4vqxc"]
 
-[sub_resource type="Shader" id="Shader_xi25p"]
+[sub_resource type="Shader" id="Shader_c6ov0"]
 resource_local_to_scene = true
 code = "shader_type canvas_item;
 
@@ -28,9 +28,9 @@ void fragment() {
 //}
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kq5sr"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w0qv5"]
 resource_local_to_scene = true
-shader = SubResource("Shader_xi25p")
+shader = SubResource("Shader_c6ov0")
 
 [sub_resource type="Theme" id="Theme_ttibf"]
 
@@ -57,7 +57,7 @@ editor_draw_limits = true
 script = ExtResource("2_dwrlo")
 
 [node name="TestBaseLayer" parent="Layers" instance=ExtResource("2_oy2iv")]
-material = SubResource("ShaderMaterial_kq5sr")
+material = SubResource("ShaderMaterial_w0qv5")
 script = ExtResource("2_dwrlo")
 
 [node name="Actors" type="Node2D" parent="."]
@@ -94,6 +94,7 @@ fill_mode = 3
 show_percentage = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Actors/Player/HUD"]
+visible = false
 top_level = true
 z_index = 1
 position = Vector2(46, 271)
@@ -105,6 +106,42 @@ offset_left = 103.0
 offset_top = 297.0
 offset_right = 369.0
 offset_bottom = 324.0
+tooltip_text = "XP"
+
+[node name="LevelUp" type="Panel" parent="Actors/Player/HUD"]
+unique_name_in_owner = true
+process_mode = 2
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -125.0
+offset_right = 100.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="lbl_LevelUp" type="Label" parent="Actors/Player/HUD/LevelUp"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 50.0
+text = "Level Up!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UpgradeOptions" type="VBoxContainer" parent="Actors/Player/HUD/LevelUp"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 190.0
+offset_bottom = 100.0
+
+[node name="LevelingSound" type="AudioStreamPlayer2D" parent="Actors/Player/HUD/LevelUp"]
+unique_name_in_owner = true
 
 [node name="EnemyActors" type="Node2D" parent="Actors"]
 y_sort_enabled = true
@@ -121,6 +158,7 @@ scale = Vector2(1, -1)
 
 [node name="Experience" parent="Actors/Pickups" instance=ExtResource("8_4vqxc")]
 position = Vector2(205, 64)
+xp = 50
 
 [node name="EnemySpawner" parent="." groups=["Monster"] instance=ExtResource("6_ydg56")]
 top_level = true
