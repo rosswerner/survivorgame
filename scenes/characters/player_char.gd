@@ -13,13 +13,14 @@ var skill1_last_time : int = 0
 var dead := false
 var enemies_in_range := []
 var rf_on := false
-var xp := 0.0
-var level := 0
+var xp := 0
+var level := 1
 
 #@export var attack_velocity : Vector2
 @onready var fireball := preload("res://scenes/skills/fireball.tscn")
 @onready var rf := preload("res://scenes/skills/righteous_fire.tscn")
 @onready var health_bar := get_node("HUD/HealthBar")
+@onready var xp_bar := get_node("HUD/XPBar")
 @onready var tot_hp : float = 1000
 @onready var cur_hp := tot_hp
 @onready var hitbox := $Hitbox
@@ -28,6 +29,9 @@ func _ready():
 	click_position = position
 	health_bar.max_value = tot_hp
 	health_bar.value = cur_hp
+	
+	xp_bar.max_value = (1.349 * 1.191 ** level + 10)
+	xp_bar.value = xp
 	#animation_tree.set("parameters/Idle/blend_position", starting_direction)
 	
 func _physics_process(_delta):
@@ -39,7 +43,7 @@ func _physics_process(_delta):
 		
 		##Use skills##
 		target_position = get_closest_enemy()
-		#fireball_skill()
+		fireball_skill()
 		rf_skill()
 			
 		pos_dist = position.distance_to(click_position)	
@@ -119,6 +123,12 @@ func get_closest_enemy() -> Vector2:
 				closest_distance = enemy_distance
 				target = body.global_position
 	return target
+	
+func level_up() -> void:
+	xp = xp - (1.349 * 1.191 ** level + 10)
+	level += 1
+	xp_bar.max_value = (1.349 * 1.191 ** level + 10)
+	#TODO skill selection
 
 func _on_animation_tree_animation_finished(anim_name: StringName) -> void:
 	if(anim_name == "death"):
@@ -131,3 +141,17 @@ func _on_enemy_detector_body_entered(body: Node2D) -> void:
 func _on_enemy_detector_body_exited(body: Node2D) -> void:
 	if(body.is_in_group("Monster")):
 		enemies_in_range.erase(body)
+
+func _on_loot_reel_area_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+func _on_pickup_detector_area_entered(area: Area2D) -> void:
+	if(area.is_in_group("Pickups")):
+		area.target = self
+
+func _on_pickup_collector_area_entered(area: Area2D) -> void:
+	if(area.is_in_group("Pickups")):
+		xp += area.collect()
+		if (xp >= (1.349 * 1.191 ** level) + 10):
+			level_up()
+		xp_bar.value = xp

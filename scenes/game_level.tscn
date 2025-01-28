@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://b4dcx8ompxlku"]
+[gd_scene load_steps=15 format=3 uid="uid://b4dcx8ompxlku"]
 
 [ext_resource type="PackedScene" uid="uid://dk84rhdogwg2j" path="res://scenes/characters/player_character.tscn" id="1_u4ltj"]
 [ext_resource type="Script" path="res://scenes/layers.gd" id="2_dwrlo"]
@@ -8,8 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://borclc8mq70g7" path="res://assets/gui/PlayerHealthSkeleton.png" id="7_6h6eq"]
 [ext_resource type="PackedScene" uid="uid://j060qriw6yvt" path="res://scenes/enemies/swordsman.tscn" id="7_07vw4"]
 [ext_resource type="Script" path="res://scenes/hud.gd" id="7_wgr5f"]
+[ext_resource type="PackedScene" uid="uid://dkwg51dvajp0i" path="res://scenes/pickups/experience.tscn" id="8_4vqxc"]
 
-[sub_resource type="Shader" id="Shader_ksge1"]
+[sub_resource type="Shader" id="Shader_xi25p"]
 resource_local_to_scene = true
 code = "shader_type canvas_item;
 
@@ -27,9 +28,9 @@ void fragment() {
 //}
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_q0n3k"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kq5sr"]
 resource_local_to_scene = true
-shader = SubResource("Shader_ksge1")
+shader = SubResource("Shader_xi25p")
 
 [sub_resource type="Theme" id="Theme_ttibf"]
 
@@ -56,7 +57,7 @@ editor_draw_limits = true
 script = ExtResource("2_dwrlo")
 
 [node name="TestBaseLayer" parent="Layers" instance=ExtResource("2_oy2iv")]
-material = SubResource("ShaderMaterial_q0n3k")
+material = SubResource("ShaderMaterial_kq5sr")
 script = ExtResource("2_dwrlo")
 
 [node name="Actors" type="Node2D" parent="."]
@@ -93,12 +94,17 @@ fill_mode = 3
 show_percentage = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Actors/Player/HUD"]
-visible = false
 top_level = true
 z_index = 1
 position = Vector2(46, 271)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("7_6h6eq")
+
+[node name="XPBar" type="ProgressBar" parent="Actors/Player/HUD"]
+offset_left = 103.0
+offset_top = 297.0
+offset_right = 369.0
+offset_bottom = 324.0
 
 [node name="EnemyActors" type="Node2D" parent="Actors"]
 y_sort_enabled = true
@@ -110,6 +116,11 @@ position = Vector2(292, 177)
 position = Vector2(328, 15)
 rotation = 3.14159
 scale = Vector2(1, -1)
+
+[node name="Pickups" type="Node2D" parent="Actors"]
+
+[node name="Experience" parent="Actors/Pickups" instance=ExtResource("8_4vqxc")]
+position = Vector2(205, 64)
 
 [node name="EnemySpawner" parent="." groups=["Monster"] instance=ExtResource("6_ydg56")]
 top_level = true

@@ -19,6 +19,7 @@ enum Enemy_State { IDLE, WALK, ATTACK, AGGRO, DEATH }
 @onready var hitbox := $Hitbox
 @onready var player := get_tree().get_first_node_in_group("Player")
 @onready var arrow := preload("res://scenes/skills/arrow.tscn")
+@onready var xp_pickup := preload("res://scenes/pickups/experience.tscn")
 
 var move_direction : Vector2 = Vector2.ZERO
 var current_state : Enemy_State = Enemy_State.IDLE
@@ -28,6 +29,7 @@ var damage_bar_delay : float = .5
 var pos_dist : float = 0.0
 var skill1_last_time : int = 0
 var player_body : Node2D
+var xp := 2
 
 func _ready():
 	health_bar.visible = false
@@ -141,6 +143,13 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	health_bar.visible = false
 	damage_bar.visible = false
+	experience()
+	
+func experience() -> void:
+	var xp_tmp := xp_pickup.instantiate()
+	xp_tmp.position = global_position
+	xp_tmp.xp = xp
+	get_tree().get_root().add_child(xp_tmp)
 	
 func _on_animation_tree_animation_finished(anim_name: StringName) -> void:
 	if(anim_name == "death"):

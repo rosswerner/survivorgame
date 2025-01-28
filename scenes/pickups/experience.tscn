@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://dkwg51dvajp0i"]
+
+[ext_resource type="Script" path="res://scenes/pickups/experience.gd" id="1_qxxa2"]
+[ext_resource type="Texture2D" uid="uid://skonyrpa01v2" path="res://assets/MyAssets/Circle.png" id="1_rismr"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_kn6lj"]
+blend_mode = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ytxnr"]
+radius = 6.08276
+
+[node name="Experience" type="Area2D" groups=["Pickups"]]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_qxxa2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_kn6lj")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_rismr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ytxnr")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+
+[connection signal="finished" from="AudioStreamPlayer2D" to="." method="_on_audio_stream_player_2d_finished"]

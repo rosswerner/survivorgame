@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dk84rhdogwg2j"]
+[gd_scene load_steps=13 format=3 uid="uid://dk84rhdogwg2j"]
 
 [ext_resource type="Script" path="res://scenes/characters/player_char.gd" id="1_j1ge7"]
 [ext_resource type="Texture2D" uid="uid://dx5j8dy1sh2sy" path="res://assets/MyAssets/Triangle128x128.png" id="2_bewpg"]
@@ -28,6 +28,12 @@ shader_parameter/noise_img = SubResource("NoiseTexture2D_4yjaf")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qlc3q"]
 radius = 1152.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ft1c6"]
+radius = 311.014
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bdgnm"]
+radius = 74.027
 
 [node name="player_character" type="CharacterBody2D" groups=["Player"]]
 z_index = 1
@@ -61,5 +67,22 @@ y_sort_enabled = true
 [node name="EnemyTargeterBox" type="CollisionShape2D" parent="EnemyDetector"]
 shape = SubResource("CircleShape2D_qlc3q")
 
+[node name="PickupDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupDetector"]
+shape = SubResource("CircleShape2D_ft1c6")
+
+[node name="PickupCollector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupCollector"]
+position = Vector2(-9, 0)
+shape = SubResource("CircleShape2D_bdgnm")
+
 [connection signal="body_entered" from="EnemyDetector" to="." method="_on_enemy_detector_body_entered"]
 [connection signal="body_exited" from="EnemyDetector" to="." method="_on_enemy_detector_body_exited"]
+[connection signal="area_entered" from="PickupDetector" to="." method="_on_pickup_detector_area_entered"]
+[connection signal="area_entered" from="PickupCollector" to="." method="_on_pickup_collector_area_entered"]

@@ -29,6 +29,7 @@ project/assembly_name="Cellular"
 Monster=""
 Player=""
 Projectile=""
+Pickups="Consumables, drops, loot, etc"
 
 [input]
 
