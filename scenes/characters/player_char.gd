@@ -3,7 +3,7 @@ extends CharacterBody2D
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
 @export var basic_active := true
-@export var fireball_active := false
+@export var fireball_active := true
 @export var rf_active := false
 @export var arrow_active := true
 
@@ -12,7 +12,8 @@ var click_position := Vector2()
 var target_position := Vector2()
 var mouse_position := Vector2()
 var pos_dist : float = 0.0
-var skill1_last_time : int = 0
+var fireball_last_time : int = 0
+var arrow_last_time : int = 0
 var dead := false
 var enemies_in_range := []
 var rf_on := false
@@ -132,8 +133,8 @@ func rf_skill() -> void:
 func arrow_skill() -> void:
 	if(target_position != Vector2.ZERO):
 		var arrow_tmp := arrow.instantiate()
-		if(Time.get_ticks_msec() - skill1_last_time >= arrow_tmp.delay_time):
-			skill1_last_time = Time.get_ticks_msec()
+		if(Time.get_ticks_msec() - arrow_last_time >= arrow_tmp.delay_time):
+			arrow_last_time = Time.get_ticks_msec()
 			var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
 			arrow_tmp.position = global_position
 			arrow_tmp.rotation = position.direction_to(target_position).angle()
@@ -144,8 +145,8 @@ func arrow_skill() -> void:
 func fireball_skill() -> void:
 	if(target_position != Vector2.ZERO):
 		var fireball_tmp := fireball.instantiate()
-		if(Time.get_ticks_msec() - skill1_last_time >= fireball_tmp.delay_time):
-			skill1_last_time = Time.get_ticks_msec()
+		if(Time.get_ticks_msec() - fireball_last_time >= fireball_tmp.delay_time):
+			fireball_last_time = Time.get_ticks_msec()
 			var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
 			fireball_tmp.position = global_position
 			fireball_tmp.rotation = position.direction_to(target_position).angle()
@@ -180,8 +181,6 @@ func level_up() -> void:
 	var options = 0
 	while(options < 3):
 		var item_options_tmp = item_options.instantiate()
-		#var upgrade = get_random_upgrades()
-		#print(upgrade)
 		item_options_tmp.item = get_random_upgrades()
 		upgrade_options_UI.add_child(item_options_tmp)
 		options += 1
@@ -206,7 +205,6 @@ func get_random_upgrades():
 	for upgrade in UpgradeDb.UPGRADES:
 		print(upgrade)
 		if(upgrade in collected_upgrades or upgrade in upgrade_options):
-			print("shouldn't be here")
 			pass
 		elif(UpgradeDb.UPGRADES[upgrade]["prereqs"].size() > 0):
 			for prereqs in UpgradeDb.UPGRADES[upgrade]["prereqs"]:
@@ -215,7 +213,6 @@ func get_random_upgrades():
 		else:
 			db_list.append(upgrade)
 			
-	print("size: ", db_list.size())
 	if(db_list.size() > 0):
 		var upgrade = db_list.pick_random()
 		upgrade_options.append(upgrade)

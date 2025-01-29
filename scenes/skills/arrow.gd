@@ -2,7 +2,7 @@ extends Area2D
 
 @export var speed : float = 300
 @export var direction := Vector2(1,0)
-@export var delay_time := 1000
+@export var delay_time := 500
 @export var duration : float = 3.0
 @export var damage : float = 1.0
 #@export var explosion_damage : float = 1.0
