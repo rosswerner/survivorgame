@@ -18,14 +18,14 @@ const UPGRADES = {
 	},
 	"fireball_proj_1" : {
 		"icon": ICON_PATH + "ranged.png",
-		"displayname": "Additional Projectile",
+		"displayname": "Additional +Proj",
 		"desc": "An additional ball of plasma is launched.",
 		"prereqs": ["fireball"],
 		"type": "ranged"
 	},
 	"fireball_proj_2" : {
 		"icon": ICON_PATH + "ranged.png",
-		"displayname": "Additional Projectile",
+		"displayname": "Plasmaball +2 Proj",
 		"desc": "An additional ball of plasma is launched.",
 		"prereqs": ["fireball_proj_1"],
 		"type": "ranged"

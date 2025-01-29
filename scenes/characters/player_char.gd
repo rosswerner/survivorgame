@@ -3,9 +3,9 @@ extends CharacterBody2D
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
 @export var basic_active := true
-@export var fireball_active := true
+@export var fireball_active := false
 @export var rf_active := false
-@export var arrow_active := true
+@export var arrow_active := false
 
 var last_velocity := Vector2.ZERO
 var click_position := Vector2()
@@ -117,7 +117,6 @@ func die() -> void:
 	#animation_tree.set("parameters/death/blend_position", velocity)
 	velocity = Vector2.ZERO
 	health_bar.visible = false
-	print("ded")
 	#damage_bar.visible = false
 	
 func basic_skill() -> void:
@@ -187,6 +186,14 @@ func level_up() -> void:
 	get_tree().paused = true
 	
 func upgrade_character(upgrade):
+	match upgrade:
+		"fireball":
+			fireball_active = true
+		"sound_wave":
+			rf_active = true
+		"arrow":
+			arrow_active = true
+			
 	var option_children = upgrade_options_UI.get_children()
 	for options in option_children:
 		options.queue_free()
@@ -203,7 +210,6 @@ func get_random_upgrades():
 	#TODO maybe add weighting for upgrades and/or reqs like 1 spell, 1 support, 3rd random, etc
 	var db_list = []
 	for upgrade in UpgradeDb.UPGRADES:
-		print(upgrade)
 		if(upgrade in collected_upgrades or upgrade in upgrade_options):
 			pass
 		elif(UpgradeDb.UPGRADES[upgrade]["prereqs"].size() > 0):
