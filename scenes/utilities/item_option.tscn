@@ -40,7 +40,7 @@ offset_left = 4.0
 offset_top = 27.0
 offset_right = 166.0
 offset_bottom = 48.0
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 6
 text = "Description of item"
 autowrap_mode = 3
 

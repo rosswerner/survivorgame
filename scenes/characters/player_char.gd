@@ -3,9 +3,9 @@ extends CharacterBody2D
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
 @export var basic_active := true
-@export var fireball_active := true
+@export var fireball_active := false
 @export var rf_active := false
-@export var arrow_active := false
+@export var arrow_active := true
 
 var last_velocity := Vector2.ZERO
 var click_position := Vector2()
@@ -180,6 +180,9 @@ func level_up() -> void:
 	var options = 0
 	while(options < 3):
 		var item_options_tmp = item_options.instantiate()
+		#var upgrade = get_random_upgrades()
+		#print(upgrade)
+		item_options_tmp.item = get_random_upgrades()
 		upgrade_options_UI.add_child(item_options_tmp)
 		options += 1
 	get_tree().paused = true
@@ -188,14 +191,36 @@ func upgrade_character(upgrade):
 	var option_children = upgrade_options_UI.get_children()
 	for options in option_children:
 		options.queue_free()
-		
+	upgrade_options.clear()
+	
+	collected_upgrades.append(upgrade)
+	
 	level_panel.visible = false
 	get_tree().paused = false
 	
 	calculate_xp()
 	
-func get_random_upgrades() -> void:
-	pass
+func get_random_upgrades():
+	#TODO maybe add weighting for upgrades and/or reqs like 1 spell, 1 support, 3rd random, etc
+	var db_list = []
+	for upgrade in UpgradeDb.UPGRADES:
+		print(upgrade)
+		if(upgrade in collected_upgrades or upgrade in upgrade_options):
+			print("shouldn't be here")
+			pass
+		elif(UpgradeDb.UPGRADES[upgrade]["prereqs"].size() > 0):
+			for prereqs in UpgradeDb.UPGRADES[upgrade]["prereqs"]:
+				if(prereqs in collected_upgrades):
+					db_list.append(upgrade)
+		else:
+			db_list.append(upgrade)
+			
+	print("size: ", db_list.size())
+	if(db_list.size() > 0):
+		var upgrade = db_list.pick_random()
+		upgrade_options.append(upgrade)
+		return upgrade
+	return null
 
 func _on_animation_tree_animation_finished(anim_name: StringName) -> void:
 	if(anim_name == "death"):

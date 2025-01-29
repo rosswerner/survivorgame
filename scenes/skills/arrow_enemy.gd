@@ -27,7 +27,7 @@ func _physics_process(delta) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("Monster"):
+	if body.is_in_group("Player"):
 		body.hit(damage)
 		destroy()
 

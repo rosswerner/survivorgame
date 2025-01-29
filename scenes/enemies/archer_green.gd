@@ -18,7 +18,7 @@ enum Enemy_State { IDLE, WALK, ATTACK, AGGRO, DEATH }
 @onready var damage_bar_timer := $HealthBar/DamageBar/DamageBarTimer
 @onready var hitbox := $Hitbox
 @onready var player := get_tree().get_first_node_in_group("Player")
-@onready var arrow := preload("res://scenes/skills/arrow.tscn")
+@onready var arrow := preload("res://scenes/skills/arrow_enemy.tscn")
 @onready var xp_pickup := preload("res://scenes/pickups/experience.tscn")
 
 var move_direction : Vector2 = Vector2.ZERO
