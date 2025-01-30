@@ -3,11 +3,12 @@ extends CharacterBody2D
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
 var basic_active := true
-var fireball_active := true
-var fireball_proj := 3
+var fireball_active := false
+var fireball_proj := 1
+var fireball_spread := 10
 var rf_active := false
 var rf_scale := 1.0
-var arrow_active := false
+var arrow_active := true
 var arrow_proj := 1
 
 var last_velocity := Vector2.ZERO
@@ -152,10 +153,15 @@ func fireball_skill() -> void:
 				fireball_last_time = Time.get_ticks_msec()
 				var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
 				var direction = position.direction_to(target_position)
-				var offset = Vector2(-direction.y, direction.x) * 10 * ((i % 2) * 2 - 1) * ((i + 1) / 2)
-				fireball_tmp.position = global_position + offset
+				#Volley code
+				#var offset = Vector2(-direction.y, direction.x) * 10 * ((i % 2) * 2 - 1) * ((i + 1) / 2)
+				#fireball_tmp.position = global_position + offset
+				var angle_offset = fireball_spread * ((i - (fireball_proj - 1) / 2.0) / (fireball_proj / 2.0))
+				var rotated_direction = direction.rotated(deg_to_rad(angle_offset))  # Rotate by spread amount
+				
+				fireball_tmp.position = global_position
 				fireball_tmp.rotation = direction.angle()
-				fireball_tmp.direction = shoot_target
+				fireball_tmp.direction = rotated_direction
 				#this is to make the proj not be affected by the player's movements
 				get_tree().get_root().add_child(fireball_tmp)
 				fireball_tmp = fireball.instantiate()
