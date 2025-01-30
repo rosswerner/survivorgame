@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://scenes/hud.gd" id="7_wgr5f"]
 [ext_resource type="PackedScene" uid="uid://dkwg51dvajp0i" path="res://scenes/pickups/experience.tscn" id="8_4vqxc"]
 
-[sub_resource type="Shader" id="Shader_xtvhp"]
+[sub_resource type="Shader" id="Shader_akglc"]
 resource_local_to_scene = true
 code = "shader_type canvas_item;
 
@@ -28,9 +28,9 @@ void fragment() {
 //}
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gcgl"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g862t"]
 resource_local_to_scene = true
-shader = SubResource("Shader_xtvhp")
+shader = SubResource("Shader_akglc")
 
 [sub_resource type="Theme" id="Theme_ttibf"]
 
@@ -57,7 +57,7 @@ editor_draw_limits = true
 script = ExtResource("2_dwrlo")
 
 [node name="TestBaseLayer" parent="Layers" instance=ExtResource("2_oy2iv")]
-material = SubResource("ShaderMaterial_8gcgl")
+material = SubResource("ShaderMaterial_g862t")
 script = ExtResource("2_dwrlo")
 
 [node name="Actors" type="Node2D" parent="."]

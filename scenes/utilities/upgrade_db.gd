@@ -37,11 +37,25 @@ const UPGRADES = {
 		"prereqs": [],
 		"type": "aoe"
 	},
+	"sound_wave_aoe" : {
+		"icon": ICON_PATH + "aoe.png",
+		"displayname": "Sound Wave Inc AoE",
+		"desc": "Increased area of effect by 30%",
+		"prereqs": ["sound_wave"],
+		"type": "aoe"
+	},
 	"arrow" : {
 		"icon": ICON_PATH + "ranged.png",
 		"displayname": "Bolt",
 		"desc": "A quick bolt is launched at a nearby enemy.",
 		"prereqs": [],
+		"type": "ranged"
+	},
+	"arrow_cd" : {
+		"icon": ICON_PATH + "ranged.png",
+		"displayname": "Bolt Cooldown Rate",
+		"desc": "Bolt CDR increased by 50%",
+		"prereqs": ["arrow"],
 		"type": "ranged"
 	}
 }

@@ -2,10 +2,13 @@ extends CharacterBody2D
 
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
-@export var basic_active := true
-@export var fireball_active := false
-@export var rf_active := false
-@export var arrow_active := false
+var basic_active := true
+var fireball_active := true
+var fireball_proj := 3
+var rf_active := false
+var rf_scale := 1.0
+var arrow_active := false
+var arrow_proj := 1
 
 var last_velocity := Vector2.ZERO
 var click_position := Vector2()
@@ -145,13 +148,17 @@ func fireball_skill() -> void:
 	if(target_position != Vector2.ZERO):
 		var fireball_tmp := fireball.instantiate()
 		if(Time.get_ticks_msec() - fireball_last_time >= fireball_tmp.delay_time):
-			fireball_last_time = Time.get_ticks_msec()
-			var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
-			fireball_tmp.position = global_position
-			fireball_tmp.rotation = position.direction_to(target_position).angle()
-			fireball_tmp.direction = shoot_target
-			#this is to make the proj not be affected by the player's movements
-			get_tree().get_root().add_child(fireball_tmp)
+			for i in range(fireball_proj):
+				fireball_last_time = Time.get_ticks_msec()
+				var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
+				var direction = position.direction_to(target_position)
+				var offset = Vector2(-direction.y, direction.x) * 10 * ((i % 2) * 2 - 1) * ((i + 1) / 2)
+				fireball_tmp.position = global_position + offset
+				fireball_tmp.rotation = direction.angle()
+				fireball_tmp.direction = shoot_target
+				#this is to make the proj not be affected by the player's movements
+				get_tree().get_root().add_child(fireball_tmp)
+				fireball_tmp = fireball.instantiate()
 		
 func get_closest_enemy() -> Vector2:
 	var closest_distance := 0.0 
@@ -189,6 +196,8 @@ func upgrade_character(upgrade):
 	match upgrade:
 		"fireball":
 			fireball_active = true
+		"fireball_proj_1", "fireball_proj_2":
+			fireball_proj += 1
 		"sound_wave":
 			rf_active = true
 		"arrow":
