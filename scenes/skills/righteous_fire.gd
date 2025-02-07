@@ -20,7 +20,6 @@ func _ready():
 
 #func _physics_process(delta) -> void:
 
-
 func _on_body_entered(body: Node2D) -> void:
 	if(body.is_in_group("Monster")):
 		enemies_in_range.append(body)

@@ -2,15 +2,20 @@ extends CharacterBody2D
 
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
-var basic_active := true
+var lightsaber_active := true
+var ls_slash_active := false
+var ls_spin_active := false
 var fireball_active := false
 var fireball_proj := 1
 var fireball_spread := 10
 var rf_active := false
 var rf_scale := 1.0
-var arrow_active := true
+var arrow_active := false
+var arrow_cd := 1.0
 var arrow_proj := 1
 
+
+var ls_tmp : Node2D
 var last_velocity := Vector2.ZERO
 var click_position := Vector2()
 var target_position := Vector2()
@@ -21,6 +26,7 @@ var arrow_last_time : int = 0
 var dead := false
 var enemies_in_range := []
 var rf_on := false
+var ls_on := false
 var xp := 0
 var level := 1
 
@@ -34,6 +40,7 @@ var dmg_resistance = 0.0
 var tempo_speed := 0.0
 
 #@export var attack_velocity : Vector2
+@onready var lightsaber := preload("res://scenes/skills/lightsaber.tscn")
 @onready var fireball := preload("res://scenes/skills/fireball.tscn")
 @onready var arrow := preload("res://scenes/skills/arrow.tscn")
 @onready var rf := preload("res://scenes/skills/righteous_fire.tscn")
@@ -54,6 +61,7 @@ func _ready():
 	
 	xp_bar.max_value = (1.349 * 1.191 ** level + 10)
 	xp_bar.value = xp
+	ls_tmp = lightsaber.instantiate()
 	#animation_tree.set("parameters/Idle/blend_position", starting_direction)
 	
 func _physics_process(_delta):
@@ -92,8 +100,8 @@ func _physics_process(_delta):
 		#print("posdist = " + str(pos_dist))
 		
 func use_skills() -> void:
-	if(basic_active) :
-		basic_skill()
+	if(lightsaber_active) :
+		lightsaber_skill()
 	if(fireball_active) :
 		fireball_skill()
 	if(rf_active) :
@@ -123,12 +131,31 @@ func die() -> void:
 	health_bar.visible = false
 	#damage_bar.visible = false
 	
-func basic_skill() -> void:
-	pass
+func lightsaber_skill() -> void:
+	var melee_target := (target_position - global_position).normalized()
 	
+	if(!ls_on):
+		ls_on = true
+		if(ls_slash_active):
+			#TODO slash
+			pass
+		if(ls_spin_active):
+			#TODO spin
+			pass
+		var mouse_direction = position.direction_to(mouse_position)
+		var offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10
+		ls_tmp.position = global_position + offset
+		ls_tmp.rotation = position.direction_to(target_position).angle()
+		ls_tmp.direction = melee_target
+		get_tree().get_root().add_child(ls_tmp)
+	else:
+		ls_tmp.rotation = position.direction_to(target_position).angle()
+		ls_tmp.direction = melee_target
+		
 func rf_skill() -> void:
 	if(!rf_on):
 		var rf_tmp := rf.instantiate()
+		rf_tmp.scale *= rf_scale
 		rf_on = true
 		rf_tmp.position = global_position.normalized()
 		add_child(rf_tmp)
@@ -136,7 +163,7 @@ func rf_skill() -> void:
 func arrow_skill() -> void:
 	if(target_position != Vector2.ZERO):
 		var arrow_tmp := arrow.instantiate()
-		if(Time.get_ticks_msec() - arrow_last_time >= arrow_tmp.delay_time):
+		if(Time.get_ticks_msec() - arrow_last_time >= arrow_tmp.delay_time * arrow_cd):
 			arrow_last_time = Time.get_ticks_msec()
 			var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
 			arrow_tmp.position = global_position
@@ -169,7 +196,7 @@ func fireball_skill() -> void:
 func get_closest_enemy() -> Vector2:
 	var closest_distance := 0.0 
 	var enemy_distance := 0.0
-	var target := Vector2.ZERO
+	var target := mouse_position
 	if(!enemies_in_range.is_empty()):
 		for body in enemies_in_range :
 			enemy_distance = position.distance_to(body.global_position)
@@ -206,8 +233,12 @@ func upgrade_character(upgrade):
 			fireball_proj += 1
 		"sound_wave":
 			rf_active = true
+		"sound_wave_aoe":
+			rf_scale *= 1.3
 		"arrow":
 			arrow_active = true
+		"arrow_cd":
+			arrow_cd = .5
 			
 	var option_children = upgrade_options_UI.get_children()
 	for options in option_children:

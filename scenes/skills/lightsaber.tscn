@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://d4giojwf15854"]
+
+[ext_resource type="Script" path="res://lightsaber.gd" id="1_74s11"]
+[ext_resource type="Texture2D" uid="uid://cus65icj74eqy" path="res://assets/MyAssets/Sword128x128.png" id="2_4w78g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pth3h"]
+size = Vector2(20, 95)
+
+[node name="Lightsaber" type="Area2D"]
+script = ExtResource("1_74s11")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2, 0)
+rotation = 1.5708
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_4w78g")
+
+[node name="MeleeCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -16.5)
+shape = SubResource("RectangleShape2D_pth3h")

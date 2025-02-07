@@ -23,6 +23,7 @@ func _on_timer_timeout():
 					enemy_spawn.global_position = get_random_position()
 					add_child(enemy_spawn)
 					counter += 1
+				#TODO Boss Enemy spawn
 					
 func get_random_position():
 	var vpr = get_viewport_rect().size * randf_range(1.1,1.4)
