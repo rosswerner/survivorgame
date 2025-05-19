@@ -3,6 +3,7 @@ extends CharacterBody2D
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
 var lightsaber_active := true
+var ls_pos := Vector2.ZERO
 var ls_slash_active := false
 var ls_spin_active := false
 var fireball_active := false
@@ -27,7 +28,7 @@ var dead := false
 var enemies_in_range := []
 var rf_on := false
 var ls_on := false
-var xp := 0
+var xp := 0.0
 var level := 1
 
 ##UPGRADES
@@ -133,24 +134,28 @@ func die() -> void:
 	
 func lightsaber_skill() -> void:
 	var melee_target := (target_position - global_position).normalized()
-	
-	if(!ls_on):
+	var mouse_direction = position.direction_to(mouse_position)
+	var offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10.0
+
+	if not ls_on:
 		ls_on = true
-		if(ls_slash_active):
-			#TODO slash
+		#offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10.0
+
+		if ls_slash_active:
+			# TODO: slash
 			pass
-		if(ls_spin_active):
-			#TODO spin
+		if ls_spin_active:
+			# TODO: spin
 			pass
-		var mouse_direction = position.direction_to(mouse_position)
-		var offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10
+			
+		ls_pos = global_position + offset
 		ls_tmp.position = global_position + offset
-		ls_tmp.rotation = position.direction_to(target_position).angle()
-		ls_tmp.direction = melee_target
-		get_tree().get_root().add_child(ls_tmp)
+		ls_tmp.rotation = fmod(position.direction_to(target_position).angle() + PI, TAU)
+		add_child(ls_tmp)
 	else:
-		ls_tmp.rotation = position.direction_to(target_position).angle()
+		ls_tmp.rotation = fmod(position.direction_to(target_position).angle() + PI, TAU)
 		ls_tmp.direction = melee_target
+		ls_tmp.position = ls_pos
 		
 func rf_skill() -> void:
 	if(!rf_on):
@@ -178,7 +183,7 @@ func fireball_skill() -> void:
 		if(Time.get_ticks_msec() - fireball_last_time >= fireball_tmp.delay_time):
 			for i in range(fireball_proj):
 				fireball_last_time = Time.get_ticks_msec()
-				var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
+				#var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
 				var direction = position.direction_to(target_position)
 				#Volley code
 				#var offset = Vector2(-direction.y, direction.x) * 10 * ((i % 2) * 2 - 1) * ((i + 1) / 2)

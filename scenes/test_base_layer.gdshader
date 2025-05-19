@@ -13,10 +13,10 @@ void fragment() {
 	float noise_r = texture(noise_img, uv1).r;
 	float noise_g = texture(noise_img, uv2).g;
 	float noise_b = texture(noise_img, uv3).b;
-	
+
 	vec3 new_color = vec3(noise_r, noise_g, noise_b)/2.5;
 	float new_alpha = noise_r * noise_g * noise_b;
-	
+
 	COLOR.rgb = new_color;
 	//COLOR.rgb = texture(TEXTURE, UV).rgb;
 	COLOR.a = clamp(new_alpha * 20.0 * texture(TEXTURE, UV).a, 0.0, 1.0);
