@@ -1,2 +1,2 @@
 # SurvivorGame
- Sound-based techno Vampire Survivors-like
+ Eventually sound-based Vampire Survivors-like
