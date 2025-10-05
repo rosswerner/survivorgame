@@ -4,8 +4,10 @@ extends CharacterBody2D
 ##Skills
 var lightsaber_active := true
 var ls_pos := Vector2.ZERO
-var ls_slash_active := false
-var ls_spin_active := false
+var ls_slash_active := true
+var ls_spin_active := true
+var ls_cd := 1.0
+var ls_move_speed := 50
 var fireball_active := false
 var fireball_proj := 1
 var fireball_spread := 10
@@ -24,6 +26,7 @@ var mouse_position := Vector2()
 var pos_dist : float = 0.0
 var fireball_last_time : int = 0
 var arrow_last_time : int = 0
+var ls_spin_last_time : int = 0
 var dead := false
 var enemies_in_range := []
 var rf_on := false
@@ -62,7 +65,6 @@ func _ready():
 	
 	xp_bar.max_value = (1.349 * 1.191 ** level + 10)
 	xp_bar.value = xp
-	ls_tmp = lightsaber.instantiate()
 	#animation_tree.set("parameters/Idle/blend_position", starting_direction)
 	
 func _physics_process(_delta):
@@ -74,7 +76,7 @@ func _physics_process(_delta):
 		
 		##Use skills##
 		target_position = get_closest_enemy()
-		use_skills()
+		use_skills(_delta)
 			
 		pos_dist = position.distance_to(click_position)	
 		if pos_dist > 4:
@@ -100,15 +102,16 @@ func _physics_process(_delta):
 		#print("velocity = " + str(velocity))
 		#print("posdist = " + str(pos_dist))
 		
-func use_skills() -> void:
+func use_skills(delta) -> void:
 	if(lightsaber_active) :
-		lightsaber_skill()
-	if(fireball_active) :
-		fireball_skill()
-	if(rf_active) :
-		rf_skill()
-	if(arrow_active) :
-		arrow_skill()
+		lightsaber_skill(delta)
+	#TODO turn these skills back on - testing lightsaber
+	#if(fireball_active) :
+		#fireball_skill()
+	#if(rf_active) :
+		#rf_skill()
+	#if(arrow_active) :
+		#arrow_skill()
 		
 func hit(damage: float) -> void:
 	if(cur_hp > 0):
@@ -132,30 +135,86 @@ func die() -> void:
 	health_bar.visible = false
 	#damage_bar.visible = false
 	
-func lightsaber_skill() -> void:
-	var melee_target := (target_position - global_position).normalized()
-	var mouse_direction = position.direction_to(mouse_position)
-	var offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10.0
+func lightsaber_skill(delta: float) -> void:
+	var player_pos = global_position
+	var target_pos = target_position
 
-	if not ls_on:
+	if target_pos == Vector2.ZERO:
+		target_pos = get_global_mouse_position()
+
+	# Instantiate if not already
+	if not ls_tmp or not ls_tmp.is_inside_tree():
+		ls_tmp = lightsaber.instantiate()
+		ls_tmp.speed = ls_move_speed * delta
+		ls_tmp.global_position = player_pos
+		ls_tmp.rotation = (target_pos - player_pos).angle()
+		get_tree().current_scene.get_node("Actors").add_child(ls_tmp)
 		ls_on = true
-		#offset = Vector2(-mouse_direction.y, mouse_direction.x) * 10.0
+		return
 
-		if ls_slash_active:
-			# TODO: slash
-			pass
-		if ls_spin_active:
-			# TODO: spin
-			pass
-			
-		ls_pos = global_position + offset
-		ls_tmp.position = global_position + offset
-		ls_tmp.rotation = fmod(position.direction_to(target_position).angle() + PI, TAU)
-		add_child(ls_tmp)
+	var saber_pos = ls_tmp.global_position
+
+	if saber_pos.distance_to(player_pos) > 200.0 or enemies_in_range.is_empty():
+		var move_dir = (player_pos - saber_pos).normalized()
+		ls_tmp.global_position += move_dir * ls_move_speed * delta
+		ls_tmp.rotation = move_dir.angle()
 	else:
-		ls_tmp.rotation = fmod(position.direction_to(target_position).angle() + PI, TAU)
-		ls_tmp.direction = melee_target
-		ls_tmp.position = ls_pos
+		var move_dir = (target_pos - saber_pos).normalized()
+		ls_tmp.global_position += move_dir * ls_move_speed * delta
+		ls_tmp.rotation = move_dir.angle()
+		
+	if ls_slash_active:
+		# TODO: slash
+		pass
+	if ls_spin_active:
+		if(Time.get_ticks_msec() - ls_spin_last_time >= ls_tmp.spin_delay_time * ls_cd):
+			ls_spin_last_time = Time.get_ticks_msec()
+			var tween = create_tween()
+			tween.tween_property(ls_tmp, "rotation", ls_tmp.rotation + TAU, .1).from_current()  # rotate 360° over 1 second
+
+#func lightsaber_skill() -> void:
+	#var melee_target := (target_position - global_position).normalized()
+	#var player_pos = global_position
+	#var saber_pos = ls_tmp.global_position
+	#var target_pos = target_position
+	#var too_far = saber_pos.distance_to(player_pos) > 200
+#
+	#if not ls_on:
+		#ls_on = true
+		##var ls_tmp := lightsaber.instantiate()
+			#
+		#ls_pos = global_position
+		#ls_tmp.position = global_position 
+		#ls_tmp.rotation = position.direction_to(target_position).angle() + PI
+#
+		##this is to make the proj not be affected by the player's movements
+		#get_tree().get_root().add_child(ls_tmp)
+	#else:
+		##if(abs(distance_dif.x) > 200 or abs(distance_dif.y) > 200 or enemies_in_range.is_empty()):
+			##ls_tmp.rotation = fmod(ls_tmp.position.direction_to(global_position).angle() + PI, TAU)
+			##ls_tmp.direction = global_position
+			##ls_tmp.position += Vector2.from_angle(ls_tmp.rotation) * ls_move_speed
+		##else:
+		##ls_tmp.rotation = ls_tmp.global_position.direction_to(melee_target).angle()
+		##ls_tmp.direction = melee_target.normalized()
+		##ls_tmp.position += Vector2.from_angle(ls_tmp.rotation) * ls_move_speed#ls_pos
+		#if too_far:
+			#var move_dir = (player_pos - saber_pos).normalized()
+			#ls_tmp.global_position += move_dir * ls_move_speed
+			#ls_tmp.rotation = move_dir.angle() + PI  # blade facing away from player
+		#else:
+			#var move_dir = (target_pos - saber_pos).normalized()
+			#ls_tmp.global_position += move_dir * ls_move_speed
+			#ls_tmp.rotation = move_dir.angle()  # blade facing target
+		#
+		#if ls_slash_active:
+			## TODO: slash
+			#pass
+		#if ls_spin_active:
+			#if(Time.get_ticks_msec() - ls_spin_last_time >= ls_tmp.spin_delay_time * ls_cd):
+				#ls_spin_last_time = Time.get_ticks_msec()
+				#var tween = create_tween()
+				#tween.tween_property(ls_tmp, "rotation", ls_tmp.rotation + TAU, .1).from_current()  # rotate 360° over 1 second
 		
 func rf_skill() -> void:
 	if(!rf_on):
@@ -243,7 +302,7 @@ func upgrade_character(upgrade):
 		"arrow":
 			arrow_active = true
 		"arrow_cd":
-			arrow_cd = .5
+			arrow_cd *= .5
 			
 	var option_children = upgrade_options_UI.get_children()
 	for options in option_children:
