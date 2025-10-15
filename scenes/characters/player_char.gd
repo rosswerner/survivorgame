@@ -2,15 +2,15 @@ extends CharacterBody2D
 
 #@export var starting_direction : Vector2 = Vector2(0,1)
 ##Skills
-var lightsaber_active := true
+var ls_active := false
 var ls_pos := Vector2.ZERO
-var ls_slash_active := true
-var ls_spin_active := true
+var ls_slash_active := false
+var ls_spin_active := false
 var ls_cd := 1.0
 var ls_move_speed := 50
-var fireball_active := false
-var fireball_proj := 1
-var fireball_spread := 10
+var plasmaball_active := false
+var plasmaball_proj := 1
+var plasmaball_spread := 10
 var rf_active := false
 var rf_scale := 1.0
 var arrow_active := false
@@ -24,7 +24,7 @@ var click_position := Vector2()
 var target_position := Vector2()
 var mouse_position := Vector2()
 var pos_dist : float = 0.0
-var fireball_last_time : int = 0
+var plasmaball_last_time : int = 0
 var arrow_last_time : int = 0
 var ls_spin_last_time : int = 0
 var dead := false
@@ -45,7 +45,7 @@ var tempo_speed := 0.0
 
 #@export var attack_velocity : Vector2
 @onready var lightsaber := preload("res://scenes/skills/lightsaber.tscn")
-@onready var fireball := preload("res://scenes/skills/fireball.tscn")
+@onready var plasmaball := preload("res://scenes/skills/plasmaball.tscn")
 @onready var arrow := preload("res://scenes/skills/arrow.tscn")
 @onready var rf := preload("res://scenes/skills/righteous_fire.tscn")
 @onready var health_bar := get_node("HUD/HealthBar")
@@ -90,40 +90,24 @@ func _physics_process(_delta):
 			velocity = Vector2(0,0)
 			move_and_slide()
 		
-		#if(!dead):
-			
-		#if last_velocity.x < 0:
-			#$Sprite2D.flip_h = true
-		#else:
-			#$Sprite2D.flip_h = false
-		
-		#print("position = " + str(position))
-		#print("mposition = " + str(click_position))
-		#print("velocity = " + str(velocity))
-		#print("posdist = " + str(pos_dist))
-		
 func use_skills(delta) -> void:
-	if(lightsaber_active) :
+	if(ls_active) :
 		lightsaber_skill(delta)
-	#TODO turn these skills back on - testing lightsaber
-	#if(fireball_active) :
-		#fireball_skill()
-	#if(rf_active) :
-		#rf_skill()
-	#if(arrow_active) :
-		#arrow_skill()
+	if(plasmaball_active) :
+		plasmaball_skill()
+	if(rf_active) :
+		rf_skill()
+	if(arrow_active) :
+		arrow_skill()
 		
 func hit(damage: float) -> void:
 	if(cur_hp > 0):
 		cur_hp -= damage
 		health_bar.value = cur_hp
-		#damage_bar_timer.start(damage_bar_delay)
-		#current_state = Swordsman_State.AGGRO
 		
 		if(!health_bar.visible):
 			health_bar.visible = true
-			#damage_bar.visible = true
-	if(cur_hp <= 0):# and current_state != Swordsman_State.DEATH):
+	if(cur_hp <= 0):
 		die()
 		
 func die() -> void:
@@ -133,7 +117,6 @@ func die() -> void:
 	#animation_tree.set("parameters/death/blend_position", velocity)
 	velocity = Vector2.ZERO
 	health_bar.visible = false
-	#damage_bar.visible = false
 	
 func lightsaber_skill(delta: float) -> void:
 	var player_pos = global_position
@@ -154,7 +137,7 @@ func lightsaber_skill(delta: float) -> void:
 
 	var saber_pos = ls_tmp.global_position
 
-	if saber_pos.distance_to(player_pos) > 200.0 or enemies_in_range.is_empty():
+	if saber_pos.distance_to(player_pos) > 125.0 or enemies_in_range.is_empty():
 		var move_dir = (player_pos - saber_pos).normalized()
 		ls_tmp.global_position += move_dir * ls_move_speed * delta
 		ls_tmp.rotation = move_dir.angle()
@@ -170,52 +153,8 @@ func lightsaber_skill(delta: float) -> void:
 		if(Time.get_ticks_msec() - ls_spin_last_time >= ls_tmp.spin_delay_time * ls_cd):
 			ls_spin_last_time = Time.get_ticks_msec()
 			var tween = create_tween()
-			tween.tween_property(ls_tmp, "rotation", ls_tmp.rotation + TAU, .1).from_current()  # rotate 360° over 1 second
+			tween.tween_property(ls_tmp, "rotation", ls_tmp.rotation + 2 * TAU, .25).from_current()  # rotate 360° over 1 second
 
-#func lightsaber_skill() -> void:
-	#var melee_target := (target_position - global_position).normalized()
-	#var player_pos = global_position
-	#var saber_pos = ls_tmp.global_position
-	#var target_pos = target_position
-	#var too_far = saber_pos.distance_to(player_pos) > 200
-#
-	#if not ls_on:
-		#ls_on = true
-		##var ls_tmp := lightsaber.instantiate()
-			#
-		#ls_pos = global_position
-		#ls_tmp.position = global_position 
-		#ls_tmp.rotation = position.direction_to(target_position).angle() + PI
-#
-		##this is to make the proj not be affected by the player's movements
-		#get_tree().get_root().add_child(ls_tmp)
-	#else:
-		##if(abs(distance_dif.x) > 200 or abs(distance_dif.y) > 200 or enemies_in_range.is_empty()):
-			##ls_tmp.rotation = fmod(ls_tmp.position.direction_to(global_position).angle() + PI, TAU)
-			##ls_tmp.direction = global_position
-			##ls_tmp.position += Vector2.from_angle(ls_tmp.rotation) * ls_move_speed
-		##else:
-		##ls_tmp.rotation = ls_tmp.global_position.direction_to(melee_target).angle()
-		##ls_tmp.direction = melee_target.normalized()
-		##ls_tmp.position += Vector2.from_angle(ls_tmp.rotation) * ls_move_speed#ls_pos
-		#if too_far:
-			#var move_dir = (player_pos - saber_pos).normalized()
-			#ls_tmp.global_position += move_dir * ls_move_speed
-			#ls_tmp.rotation = move_dir.angle() + PI  # blade facing away from player
-		#else:
-			#var move_dir = (target_pos - saber_pos).normalized()
-			#ls_tmp.global_position += move_dir * ls_move_speed
-			#ls_tmp.rotation = move_dir.angle()  # blade facing target
-		#
-		#if ls_slash_active:
-			## TODO: slash
-			#pass
-		#if ls_spin_active:
-			#if(Time.get_ticks_msec() - ls_spin_last_time >= ls_tmp.spin_delay_time * ls_cd):
-				#ls_spin_last_time = Time.get_ticks_msec()
-				#var tween = create_tween()
-				#tween.tween_property(ls_tmp, "rotation", ls_tmp.rotation + TAU, .1).from_current()  # rotate 360° over 1 second
-		
 func rf_skill() -> void:
 	if(!rf_on):
 		var rf_tmp := rf.instantiate()
@@ -236,26 +175,26 @@ func arrow_skill() -> void:
 			#this is to make the proj not be affected by the player's movements
 			get_tree().get_root().add_child(arrow_tmp)
 		
-func fireball_skill() -> void:
+func plasmaball_skill() -> void:
 	if(target_position != Vector2.ZERO):
-		var fireball_tmp := fireball.instantiate()
-		if(Time.get_ticks_msec() - fireball_last_time >= fireball_tmp.delay_time):
-			for i in range(fireball_proj):
-				fireball_last_time = Time.get_ticks_msec()
-				#var shoot_target := (target_position - global_position).normalized() #(mouse_position - global_position).normalized()
+		var plasmaball_tmp := plasmaball.instantiate()
+		if(Time.get_ticks_msec() - plasmaball_last_time >= plasmaball_tmp.delay_time):
+			for i in range(plasmaball_proj):
+				plasmaball_last_time = Time.get_ticks_msec()
 				var direction = position.direction_to(target_position)
 				#Volley code
 				#var offset = Vector2(-direction.y, direction.x) * 10 * ((i % 2) * 2 - 1) * ((i + 1) / 2)
-				#fireball_tmp.position = global_position + offset
-				var angle_offset = fireball_spread * ((i - (fireball_proj - 1) / 2.0) / (fireball_proj / 2.0))
+				#plasmaball_tmp.position = global_position + offset
+				var angle_offset = plasmaball_spread * ((i - (plasmaball_proj - 1) / 2.0) / (plasmaball_proj / 2.0))
 				var rotated_direction = direction.rotated(deg_to_rad(angle_offset))  # Rotate by spread amount
 				
-				fireball_tmp.position = global_position
-				fireball_tmp.rotation = direction.angle()
-				fireball_tmp.direction = rotated_direction
+				plasmaball_tmp.position = global_position
+				plasmaball_tmp.rotation = direction.angle()
+				plasmaball_tmp.direction = rotated_direction
+				
 				#this is to make the proj not be affected by the player's movements
-				get_tree().get_root().add_child(fireball_tmp)
-				fireball_tmp = fireball.instantiate()
+				get_tree().get_root().add_child(plasmaball_tmp)
+				plasmaball_tmp = plasmaball.instantiate()
 		
 func get_closest_enemy() -> Vector2:
 	var closest_distance := 0.0 
@@ -291,10 +230,10 @@ func level_up() -> void:
 	
 func upgrade_character(upgrade):
 	match upgrade:
-		"fireball":
-			fireball_active = true
-		"fireball_proj_1", "fireball_proj_2":
-			fireball_proj += 1
+		"plasmaball":
+			plasmaball_active = true
+		"plasmaball_proj_1", "plasmaball_proj_2":
+			plasmaball_proj += 1
 		"sound_wave":
 			rf_active = true
 		"sound_wave_aoe":
@@ -303,6 +242,10 @@ func upgrade_character(upgrade):
 			arrow_active = true
 		"arrow_cd":
 			arrow_cd *= .5
+		"melee":
+			ls_active = true
+		"melee_spin":
+			ls_spin_active = true
 			
 	var option_children = upgrade_options_UI.get_children()
 	for options in option_children:

@@ -1,8 +1,8 @@
 [gd_scene load_steps=23 format=3 uid="uid://bytf0u1u6tsjx"]
 
-[ext_resource type="Script" path="res://scenes/skills/fireball.gd" id="1_8ejp7"]
-[ext_resource type="Texture2D" uid="uid://btpb11cmt7fve" path="res://assets/skills/fireball.png" id="1_tybvm"]
-[ext_resource type="Material" uid="uid://b5r65ghbsw1m8" path="res://scenes/enemies/arrow.tres" id="2_8icvs"]
+[ext_resource type="Script" path="res://scenes/skills/plasmaball.gd" id="1_uu3wc"]
+[ext_resource type="Material" uid="uid://b5r65ghbsw1m8" path="res://scenes/enemies/arrow.tres" id="2_8ceje"]
+[ext_resource type="Texture2D" uid="uid://btpb11cmt7fve" path="res://assets/skills/fireball.png" id="3_kdrko"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mr4nd"]
 radius = 5.09902
@@ -126,12 +126,12 @@ radius = 11.0
 z_index = 1
 y_sort_enabled = true
 position = Vector2(1, -2)
-script = ExtResource("1_8ejp7")
+script = ExtResource("1_uu3wc")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-material = ExtResource("2_8icvs")
+material = ExtResource("2_8ceje")
 rotation = 1.5708
-texture = ExtResource("1_tybvm")
+texture = ExtResource("3_kdrko")
 hframes = 14
 vframes = 3
 frame = 31

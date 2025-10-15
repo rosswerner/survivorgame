@@ -9,27 +9,29 @@ const UPGRADES = {
 		"prereqs": [],
 		"type": "utility"
 	},
-	"fireball" : {
+#	Plasmaball (fireball)
+	"plasmaball" : {
 		"icon": ICON_PATH + "ranged.png",
 		"displayname": "Plasmaball",
 		"desc": "A ball of plasma is launched towards the nearest enemy in range, hits, then explodes.",
 		"prereqs": [],
 		"type": "ranged"
 	},
-	"fireball_proj_1" : {
+	"plasmaball_proj_1" : {
 		"icon": ICON_PATH + "ranged.png",
 		"displayname": "Additional +Proj",
 		"desc": "An additional ball of plasma is launched.",
 		"prereqs": ["fireball"],
 		"type": "ranged"
 	},
-	"fireball_proj_2" : {
+	"plasmaball_proj_2" : {
 		"icon": ICON_PATH + "ranged.png",
 		"displayname": "Plasmaball +2 Proj",
 		"desc": "An additional ball of plasma is launched.",
 		"prereqs": ["fireball_proj_1"],
 		"type": "ranged"
 	},
+#	Sound Wave (RF)
 	"sound_wave" : {
 		"icon": ICON_PATH + "aoe.png",
 		"displayname": "Sound Wave",
@@ -44,6 +46,7 @@ const UPGRADES = {
 		"prereqs": ["sound_wave"],
 		"type": "aoe"
 	},
+#	Arrow
 	"arrow" : {
 		"icon": ICON_PATH + "ranged.png",
 		"displayname": "Bolt",
@@ -57,5 +60,20 @@ const UPGRADES = {
 		"desc": "Bolt CDR increased by 50%",
 		"prereqs": ["arrow"],
 		"type": "ranged"
+	},
+#	Melee
+	"melee" : {
+		"icon": ICON_PATH + "melee.png",
+		"displayname": "Photonblade",
+		"desc": "A short range blade that targets nearby enemies.",
+		"prereqs": [],
+		"type": "melee"
+	},
+	"melee_spin" : {
+		"icon": ICON_PATH + "melee.png",
+		"displayname": "Photonblade Spin",
+		"desc": "Adds a spin to the blade's attacks",
+		"prereqs": ["melee"],
+		"type": "melee"
 	}
 }

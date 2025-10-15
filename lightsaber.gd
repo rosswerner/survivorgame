@@ -4,7 +4,7 @@ extends Area2D
 @export var direction := Vector2(1,0)
 @export var damage : float = 100
 @export var knockback_amount : float = 100
-@export var spin_delay_time : float = 1000 
+@export var spin_delay_time : float = 5000 
 
 func _physics_process(delta) -> void:
 	position.x += (speed * direction.x * delta)
